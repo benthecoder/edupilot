@@ -1,6 +1,7 @@
 import streamlit as st
 import os
-from utils import openai_call
+from utils import openai_call, generate_word_document
+
 
 # Check and initialize Session States
 if "title" not in st.session_state:
@@ -39,6 +40,7 @@ def main():
         )
         st.stop()
 
+    full_response = ""
     with st.form("my_form"):
         st.write(f"Assignments for {st.session_state.title}")
 
@@ -109,14 +111,18 @@ def main():
             )
 
             message_placeholder = st.empty()
-            full_response = ""
+            full_response = openai_call(st.session_state.messages, message_placeholder)
 
-            openai_call(st.session_state.messages, message_placeholder)
+            #st.session_state.messages.extend({"role": "assistant", "content": full_response})
 
-            st.session_state.messages.extend(
-                {"role": "assistant", "content": full_response}
-            )
-
+    if full_response != "":
+        doc_file = generate_word_document(full_response)
+        st.download_button(
+            label="Download Assignment",
+            data=doc_file,
+            file_name='assignment.docx',
+            mime='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        )
 
 if __name__ == "__main__":
     main()
