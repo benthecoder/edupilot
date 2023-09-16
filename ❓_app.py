@@ -3,7 +3,6 @@ import os
 from utils import openai_call, generate_word_document
 
 
-# Check and initialize Session States
 if "title" not in st.session_state:
     st.session_state.title = ""
 
@@ -14,7 +13,6 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 if "transcripts" not in st.session_state:
-    # load all the transcripts from transcripts folder
     st.session_state.transcripts = [
         files for files in os.listdir("transcripts") if files.endswith(".txt")
     ]
@@ -54,7 +52,7 @@ def main():
             "Number of questions",
             min_value=1,
             max_value=10,
-            value=1,
+            value=2,
             help="Enter the number of questions contained in the assignment",
         )
 
@@ -73,35 +71,40 @@ def main():
             Consider this information:
             Class title: {st.session_state.title}
             Class description: {st.session_state.description}
-            Based on the transcript given {lecture}, generate {num_questions} insightful, high-level and thought-provoking questions equivalent to an Ivy league standard like Yale. 
+            
+            Transcript:
+            {lecture}
+
+            Your task is to generate {num_questions} insightful, high-level and thought-provoking questions equivalent to an Ivy league standard like Yale. You're provided instructions by the professor that you must follow: {instructions}.
 
             Ensure the questions require deep consideration of the lecture content and are not easily answerable without a clear understanding of the lecture. 
 
-            Instructions by the professor that you must follow: {instructions}
+            Below is the format for the questions, answers, and grading rubric:
 
-            Question format:
-            If it's a multiple choice question, the answer and grading rubric should be just the right answer.
-
-            If it's a short answer question, the answer and grading rubric should be a sample answer, and have key points.
+            Make sure you separate each question and answer on a new line, I dont' want to see information in one paragraph
 
             Questions:
             --------------
             Question {{n}} [n points]: {{question_text}} 
 
-            for multiple choice, be sure to have new lines, like
-            A) {{answer_a}} \n
-            B) {{answer_b}} \n
+            for multiple choice questions, make sure each choice is on a new line, like below
+
+            ```
+            A) {{answer_a}}
+            B) {{answer_b}}
             C) {{answer_c}}
-            ...
+            D) {{answer_d}}
+            ```
 
             Answers:
             --------------
-            Question {{n}}: {{answer_text}} \n
+            Question {{n}}: {{answer_text}}
+
 
             Grading Rubric:
             ---------------
             Question {{n}}:
-            - Key Point 1: {{key_point_1}} (n points)
+            - Key Point {{n}}: {{key_point_1}} (n points)
             ...
             """
 

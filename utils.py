@@ -15,7 +15,6 @@ def openai_call(message, message_placeholder, model=GPT_MODEL, temperature=0.2):
         model=model,
         messages=[{"role": m["role"], "content": m["content"]} for m in message],
         temperature=temperature,
-        max_tokens=4000,
         stream=True,
     ):
         full_response += response.choices[0].delta.get("content", "")
