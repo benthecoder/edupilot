@@ -67,7 +67,7 @@ def main():
         # Submit button
         submitted = st.form_submit_button("Generate Assignment")
         if submitted:
-            st.session_state.messages.clear()
+            del st.session_state.messages[:]
 
             prompt = f"""
             Consider this information:
@@ -87,11 +87,16 @@ def main():
             Questions:
             --------------
             Question {{n}} [n points]: {{question_text}} 
+
+            for multiple choice, be sure to have new lines, like
+            A) {{answer_a}} \n
+            B) {{answer_b}} \n
+            C) {{answer_c}}
             ...
 
             Answers:
             --------------
-            Question {{n}}: {{answer_text}}
+            Question {{n}}: {{answer_text}} \n
 
             Grading Rubric:
             ---------------

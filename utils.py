@@ -5,6 +5,7 @@ from docx.shared import Pt
 from io import BytesIO
 
 GPT_MODEL = "gpt-4"
+# GPT_MODEL = "gpt-3.5-turbo-16k"
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 
@@ -14,6 +15,7 @@ def openai_call(message, message_placeholder, model=GPT_MODEL, temperature=0.2):
         model=model,
         messages=[{"role": m["role"], "content": m["content"]} for m in message],
         temperature=temperature,
+        max_tokens=4000,
         stream=True,
     ):
         full_response += response.choices[0].delta.get("content", "")
