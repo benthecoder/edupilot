@@ -89,12 +89,13 @@ def main():
 
             for multiple choice questions, make sure each choice is on a new line, like below
 
-            ```
             A) {{answer_a}}
+
             B) {{answer_b}}
+
             C) {{answer_c}}
+            
             D) {{answer_d}}
-            ```
 
             Answers:
             --------------
