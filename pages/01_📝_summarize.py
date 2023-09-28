@@ -1,5 +1,13 @@
 import streamlit as st
-from utils import openai_call, generate_word_document
+from utils import generate_word_document
+from llama_index import SimpleDirectoryReader
+import pathlib
+from llama_index.llms import OpenAI
+from llama_index import ServiceContext
+from llama_index.response_synthesizers import Refine
+
+
+PROJECT_DIR = pathlib.Path(__file__).parent.parent
 
 st.title("Transcript Summarizer")
 
@@ -9,34 +17,23 @@ with st.form("my_form"):
         "Select a transcript file", options=st.session_state.transcripts
     )
 
-    with open("transcripts/" + transcript_file, "r") as f:
-        lecture = f.read()
-
     # Submit button
     submitted = st.form_submit_button("Summarize Transcript")
     if submitted:
-        st.session_state.messages.clear()
+        input_file = PROJECT_DIR / "transcripts" / transcript_file
+        reader = SimpleDirectoryReader(input_files=[input_file])
+        docs = reader.load_data()
+        text = docs[0].text
 
-        # Create the prompt here
-        prompt = f"""
-        Consider this lecture transcript:
-        {lecture}
-
-        Write a high-quality summary of the lecture using the Cornell note taking method.
-        """
-
-        st.session_state.messages.extend(
-            [
-                {
-                    "role": "system",
-                    "content": "Your task is to summarize this lecture.",
-                },
-                {"role": "user", "content": prompt},
-            ]
+        llm = OpenAI(model="gpt-4")
+        service_context = ServiceContext.from_defaults(llm=llm)
+        summarizer = Refine(service_context=service_context, verbose=True)
+        response = summarizer.get_response(
+            "Summarize this lecture using the cornell system", [text]
         )
 
-        message_placeholder = st.empty()
-        content = openai_call(st.session_state.messages, message_placeholder)
+        st.write(response)
+
 
 if content != "":
     doc_file = generate_word_document(content)
